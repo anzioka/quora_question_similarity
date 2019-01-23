@@ -1,2 +1,7 @@
 # packages
 *.zip
+*.tsv
+data/
+
+#virtual env
+.env/
