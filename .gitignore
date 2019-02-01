@@ -1,9 +1,9 @@
 # packages
 *.zip
 *.tsv
-data/*
 *.hdf5
 *.npy
+*.txt
 
 #Don't keep track of the files in data but make the folders visible on git. The file .gitkeep is empty
 #virtual env
@@ -13,6 +13,6 @@ data/*
 
 
 #scratch
-scratch.txt
+
 .DS_Store
 __pycache__/
