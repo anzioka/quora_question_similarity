@@ -1,7 +1,23 @@
 # packages
 *.zip
 *.tsv
-data/
+data/*
+experiments/
 
+#Don't keep track of the files in data but make the folders visible on git. The file .gitkeep is empty
+!data/dataset_params.json
+!data/embeddings/.gitkeep
+!data/glove/.gitkeep
+!data/labels/.gitkeep
+!data/quora/.gitkeep
+!test/quora/.gitkeep
+!train/quora/.gitkeep
+!experiments/.gitkeep
 #virtual env
 .env/
+
+#scratch
+scratch.txt
+.DS_Store
+.gitignore
+__pycache__/

@@ -3,7 +3,7 @@ Exploration of deep learning methods to solve the problem of detecting the simil
 
 *Author: Alfonce Nzioka*
 
-##Requirements
+## Requirements
 
 Create a python2 virtual env and install the requirements
 ```virtualenv .env
@@ -11,6 +11,6 @@ Create a python2 virtual env and install the requirements
 	pip install -r requirements.txt
 ```
 
-##Steps
+## Steps
 
 

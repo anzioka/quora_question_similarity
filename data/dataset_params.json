@@ -1,0 +1,8 @@
+{
+    "train_size": 323432,
+    "dev_size": 40429,
+    "test_size": 40429,
+    "vocab_size": 95597,
+    "embed_dim": 300,
+    "seq_len": 25
+}
