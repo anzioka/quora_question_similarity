@@ -2,7 +2,7 @@
 *.zip
 *.tsv
 data/*
-experiments/
+experiments/*
 
 #Don't keep track of the files in data but make the folders visible on git. The file .gitkeep is empty
 !data/dataset_params.json

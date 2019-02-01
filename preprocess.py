@@ -29,7 +29,6 @@ labels_train_path = "data/labels/labels_train.npy"
 labels_dev_path = "data/labels/labels_dev.npy"
 labels_test_path = "data/labels/labels_test.npy"
 dataset_params = "data/dataset_params.json"
-max_seq = 25
 embed_dim = 300
 
 def save_json(dataset_info):
@@ -60,14 +59,12 @@ def process_dataset():
 	q_1 = t.texts_to_sequences(q1_data)
 	q_2 = t.texts_to_sequences(q2_data)
 
-	print (q1_data[:10])
-	print (q_1[:10])
+	max_seq = max([len(i) for i in q_1] + [len(i) for i in q_2])
+	print ("Maximum sequence in q_1: {}".format(max_seq))
 
 	q_1 = pad_sequences(q_1, maxlen = max_seq, padding="post")
 	q_2 = pad_sequences(q_2, maxlen = max_seq, padding="post")
 	assert q_2.shape == q_1.shape
-
-	print ("padded q1 shape : {}".format(q_1.shape))
 
 	#create embedding dictionary
 	word_index = t.word_index
@@ -76,7 +73,6 @@ def process_dataset():
 	print ("vocab_size: {}".format(vocab_size))
 	print ("Creating embedding dictionary...")
 	embedding_dict = {}
-	temp = []
 	with open(glove_embeddings, encoding='utf-8') as f:
 		for line in tqdm(f):
 			values = line.split(' ')
@@ -144,7 +140,7 @@ def data_processed():
 	for file in [q1_train_path, q2_train_path, q1_dev_path, q2_dev_path, q1_test_path, q2_test_path, labels_train_path, labels_dev_path, labels_test_path, word_embeddings_path]:
 		if not os.path.exists(file):
 			return False
-	return True
+	return True 
 
 def load_dataset():
 	if  data_processed():
@@ -165,16 +161,16 @@ def load_dataset():
 		'''
 		Be sure to download the dataset and glvoe embeddings before processing anything.
 		'''
-		# if not os.path.exists(quora_dataset):
-		# 	response = requests.get(quora_url, allow_redirects=True)
-		# 	with open(quora_dataset, 'wb') as f:
-		# 		for data in tqdm(response.iter_content()):
-		# 			f.write(data)
+		if not os.path.exists(quora_dataset):
+			response = requests.get(quora_url, allow_redirects=True)
+			with open(quora_dataset, 'wb') as f:
+				for data in tqdm(response.iter_content()):
+					f.write(data)
 
-		# if not os.path.exists(glove_embeddings):
-		# 	response = urlopen(glove_url)
-		# 	zipfile = ZipFile(BytesIO(response.read()))
-		# 	zipfile.extractall("data/glove")
+		if not os.path.exists(glove_embeddings):
+			response = urlopen(glove_url)
+			zipfile = ZipFile(BytesIO(response.read()))
+			zipfile.extractall("data/glove")
 
 		return process_dataset()
 
