@@ -5,3 +5,4 @@ keras
 numpy
 tqdm
 requests
+sklearn

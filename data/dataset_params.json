@@ -1,8 +1,7 @@
 {
-    "train_size": 323432,
-    "dev_size": 40429,
+    "train_size": 363861,
     "test_size": 40429,
-    "vocab_size": 95597,
-    "embed_dim": 300,
-    "seq_len": 237
+    "seq_len": 248,
+    "vocab_size": 86359,
+    "embed_dim": 300
 }
