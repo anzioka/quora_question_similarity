@@ -3,6 +3,8 @@ import argparse
 import os
 import json
 import importlib
+import matplotlib
+matplotlib.use('PS')
 import matplotlib.pyplot as plt
 from utils import *
 from preprocess import load_dataset
