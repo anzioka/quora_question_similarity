@@ -18,3 +18,6 @@ def save_json(config, filename):
 		item = {k: v for k, v in config.items()}
 		json.dump(k, v, indent=4)
 	#config is an object containing key: dict values
+def get_initial_epoch(checkpoint_path):
+	filename = get_basename(checkpoint_path)
+	return int(filename.split("-")[1])

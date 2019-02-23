@@ -4,6 +4,7 @@ from keras.layers.embeddings import Embedding
 from keras.layers.wrappers import Bidirectional
 from keras.models import Sequential, Model
 from keras.optimizers import Adam
+from keras import regularizers
 
 def model(config, embeddings):
 	print("Building model")
@@ -24,9 +25,9 @@ def model(config, embeddings):
 	#first two LSTMs stacked to learn higher-level temporal representation
 	#batch normalization to quicken training
 	merged = Concatenate()([q1, q2])
-	merged = Dense(40, activation = "relu")(merged)
+	merged = Dense(40, activation = "relu", kernel_regularizer=regularizers.l2(config['l2']))(merged)
 	merged = BatchNormalization() (merged)
-	merged = Dense(10, activation = "relu")(merged)
+	merged = Dense(10, activation = "relu", kernel_regularizer=regularizers.l2(config['l2']))(merged)
 	merged = BatchNormalization() (merged)
 	merged = Dense(2, activation = "softmax") (merged)
 	model = Model(inputs=[question1, question2], outputs=merged)

@@ -2,6 +2,7 @@ import sys
 import argparse
 import os
 import json
+import numpy as np
 import importlib
 import matplotlib
 matplotlib.use('PS')
@@ -17,20 +18,26 @@ json_file = "training_parameters.json"
 dataset_params_path = "data/dataset_params.json"
 
 def train_and_evaluate(model, config, q1_train, q2_train, q1_test, q2_test, labels_train, labels_test):
-	if config['data_small']:
+	if config['train_subset']:
 		q1_train = q1_train[:1000]
 		q2_train = q2_train[:1000]
 		labels_train = labels_train[:1000]
 
-	checkpoint = ModelCheckpoint(filepath=os.path.join(config['model_dir'], "base_model-{epoch:02d}-{val_loss:.2f}-{acc:.2f}.hdf5"), save_best_only=True)
+	checkpoint = ModelCheckpoint(filepath=os.path.join(config['model_dir'], "base_model-{epoch:02d}-{val_loss:.2f}-{acc:.2f}.hdf5"), save_weights_only=True)
 	# reduce_lr = ReduceLROnPlateau(verbose = 1, patience=10)
 
-	if config['restore_model'] is not None:
-		model = load_model(config['restore_model'])
-	history = model.fit([q1_train, q2_train], labels_train, epochs = config['epochs'], verbose=1, batch_size=config['batch_size'], callbacks=[checkpoint], validation_split=0.1)
+	if config['weights'] is not None:
+		model.load_weights(config['weights'])
+		initial_epoch = get_initial_epoch(config['weights'])
+	else:
+		initial_epoch = 0
+	history = model.fit([q1_train, q2_train], labels_train, epochs = config['epochs'], initial_epoch = initial_epoch, verbose=1, batch_size=config['batch_size'], callbacks=[checkpoint], validation_split=0.1)
+	#save whole model: architecture, weights and optimizer state
+	model.save(os.path.join(config['model_dir'], 'base_model.hdf5'))
 	
-	#plot
 	history_dict = history.history
+	np.save(open(os.path.join(config['model_dir'], "history_dict.npy"), "wb"), history_dict)
+
 	acc = history_dict['acc']
 	val_acc = history_dict['val_acc']
 	loss = history_dict['loss']
@@ -38,11 +45,11 @@ def train_and_evaluate(model, config, q1_train, q2_train, q1_test, q2_test, labe
 
 	epochs = range(1, len(acc) + 1)
 	plt.plot(epochs, loss, 'bo', label='Training loss')
-	plt.plot(epochs, val_loss, 'b', label='Validatin loss')
+	plt.plot(epochs, val_loss, 'b', label='Validation loss')
 	plt.xlabel('Epochs')
 	plt.ylabel('Loss')
 	plt.legend()
-	plt.save_fig(os.path.join(config['model_dir'], 'loss.png'))
+	plt.savefig(os.path.join(config['model_dir'], 'loss.png'))
 
 	plt.clf()
 	plt.plot(epochs, acc, 'bo', label='Training acc')
@@ -51,25 +58,19 @@ def train_and_evaluate(model, config, q1_train, q2_train, q1_test, q2_test, labe
 	plt.xlabel('Epochs')
 	plt.ylabel('Accuracy')
 	plt.legend()
-	plt.save_fig(os.path.join(config['model_dir'], 'accuracy.png'))
+	plt.savefig(os.path.join(config['model_dir'], 'accuracy.png'))
 
 
 if __name__ == "__main__":
 	parser = argparse.ArgumentParser()
 	parser.add_argument('--model_dir', help='Directory with training parameters,', default='experiments/base_model')
 	parser.add_argument('--model', help='Python file specifying the model to train.', default = 'model/base_model.py')
-	parser.add_argument('--data_small', help='train using a smaller dataset?', dest='data_small', action='store_true')
-	parser.add_argument('--restore_model', help='.hdf5 file in model_dir to load weights from', default=None)
+	parser.add_argument('--train_subset', help='train using a smaller dataset?', dest='train_subset', action='store_true')
+	parser.add_argument('--weights', help='.hdf5 file in model_dir to load weights from', default=None)
 	args = parser.parse_args()
 
 	assert os.path.exists(args.model_dir), "directory does not exist : {}".format(args.model_dir)
 	assert os.path.exists(args.model), "model file does not exist: {}".format(args.model)
-
-	config['restore_model'] = None
-	if args.restore_model is None:
-		restore_model = os.path.join(args.model_dir, args.restore_model)
-		assert os.path.exists(restore_model), "file does not exist: ".format(restore_model)
-		config['restore_model'] = restore_model
 
 	#load the parameters 
 	json_path = os.path.join(args.model_dir, json_file)
@@ -80,7 +81,13 @@ if __name__ == "__main__":
 	config  = read_json(json_path, dataset_params_path)
 	config['model_dir'] = args.model_dir
 	config['model'] = get_basename(args.model)
-	config['data_small'] = args.data_small
+	config['train_subset'] = args.train_subset
+
+	config['weights'] = None
+	if args.weights is not None:
+		weights = os.path.join(args.model_dir, args.weights)
+		assert os.path.exists(weights), "file does not exist: ".format(weights)
+		config['weights'] = weights
 
 	#import model module
 	module = importlib.import_module("model.%s" % config['model'])
