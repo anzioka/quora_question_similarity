@@ -1,6 +1,7 @@
 {
 	"optimizer" : "adam",
 	"loss" : "binary_crossentropy",
+	"lr": 0.001,
 	"epochs" : 25,
 	"dropout" : 0.1,
 	"batch_size" : 32,
