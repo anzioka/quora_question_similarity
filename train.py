@@ -8,6 +8,7 @@ matplotlib.use('PS')
 import matplotlib.pyplot as plt
 from utils import *
 from preprocess import load_dataset
+from keras.models import load_model
 from keras.callbacks import ModelCheckpoint, ReduceLROnPlateau
 
 
@@ -23,6 +24,9 @@ def train_and_evaluate(model, config, q1_train, q2_train, q1_test, q2_test, labe
 
 	checkpoint = ModelCheckpoint(filepath=os.path.join(config['model_dir'], "base_model-{epoch:02d}-{val_loss:.2f}-{acc:.2f}.hdf5"), save_best_only=True)
 	# reduce_lr = ReduceLROnPlateau(verbose = 1, patience=10)
+
+	if config['restore_model'] is not None:
+		model = load_model(config['restore_model'])
 	history = model.fit([q1_train, q2_train], labels_train, epochs = config['epochs'], verbose=1, batch_size=config['batch_size'], callbacks=[checkpoint], validation_split=0.1)
 	
 	#plot
@@ -55,10 +59,17 @@ if __name__ == "__main__":
 	parser.add_argument('--model_dir', help='Directory with training parameters,', default='experiments/base_model')
 	parser.add_argument('--model', help='Python file specifying the model to train.', default = 'model/base_model.py')
 	parser.add_argument('--data_small', help='train using a smaller dataset?', dest='data_small', action='store_true')
+	parser.add_argument('--restore_model', help='.hdf5 file in model_dir to load weights from', default=None)
 	args = parser.parse_args()
 
 	assert os.path.exists(args.model_dir), "directory does not exist : {}".format(args.model_dir)
 	assert os.path.exists(args.model), "model file does not exist: {}".format(args.model)
+
+	config['restore_model'] = None
+	if args.restore_model is None:
+		restore_model = os.path.join(args.model_dir, args.restore_model)
+		assert os.path.exists(restore_model), "file does not exist: ".format(restore_model)
+		config['restore_model'] = restore_model
 
 	#load the parameters 
 	json_path = os.path.join(args.model_dir, json_file)
