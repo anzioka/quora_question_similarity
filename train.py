@@ -22,7 +22,7 @@ def train_and_evaluate(model, config, q1_train, q2_train, q1_test, q2_test, labe
 		q2_train = q2_train[:1000]
 		labels_train = labels_train[:1000]
 
-	checkpoint = ModelCheckpoint(filepath=os.path.join(config['model_dir'], "base_model-{epoch:02d}-{val_loss:.2f}-{acc:.2f}.hdf5"), save_best_only=True)
+	checkpoint = ModelCheckpoint(filepath=os.path.join(config['model_dir'], "{model}-{epoch:02d}-{val_loss:.2f}-{acc:.2f}.hdf5".format(model = config['model'])), save_best_only=True)
 	# reduce_lr = ReduceLROnPlateau(verbose = 1, patience=10)
 
 	if config['weights'] is not None:
@@ -33,7 +33,7 @@ def train_and_evaluate(model, config, q1_train, q2_train, q1_test, q2_test, labe
 	history = model.fit([q1_train, q2_train], labels_train, epochs = config['epochs'], initial_epoch = initial_epoch, verbose=1, batch_size=config['batch_size'], callbacks=[checkpoint], validation_split=0.1)
 	
 	#save whole model: architecture, weights and optimizer state
-	model.save(os.path.join(config['model_dir'], 'base_model.hdf5'))
+	model.save(os.path.join(config['model_dir'], '{model}.hdf5'.format(model = config['model'])))
 	
 	history_dict = history.history
 	np.save(open(os.path.join(config['model_dir'], "history_dict.npy"), "wb"), history_dict)
@@ -59,8 +59,6 @@ def train_and_evaluate(model, config, q1_train, q2_train, q1_test, q2_test, labe
 	plt.ylabel('Accuracy')
 	plt.legend()
 	plt.savefig(os.path.join(config['model_dir'], 'accuracy.png'))
-
-
 
 if __name__ == "__main__":
 	parser = argparse.ArgumentParser()
