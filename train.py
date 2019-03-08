@@ -13,8 +13,7 @@ from keras.models import load_model
 from keras.callbacks import ModelCheckpoint, ReduceLROnPlateau
 
 
-experiments_dir = "experiments"
-json_file = "training_parameters.json"
+# experiments = "experiments"
 dataset_params_path = "data/dataset_params.json"
 
 def train_and_evaluate(model, config, q1_train, q2_train, q1_test, q2_test, labels_train, labels_test):
@@ -23,7 +22,7 @@ def train_and_evaluate(model, config, q1_train, q2_train, q1_test, q2_test, labe
 		q2_train = q2_train[:1000]
 		labels_train = labels_train[:1000]
 
-	checkpoint = ModelCheckpoint(filepath=os.path.join(config['model_dir'], "base_model-{epoch:02d}-{val_loss:.2f}-{acc:.2f}.hdf5"), save_weights_only=True)
+	checkpoint = ModelCheckpoint(filepath=os.path.join(config['model_dir'], "base_model-{epoch:02d}-{val_loss:.2f}-{acc:.2f}.hdf5"), save_best_only=True)
 	# reduce_lr = ReduceLROnPlateau(verbose = 1, patience=10)
 
 	if config['weights'] is not None:
@@ -32,6 +31,7 @@ def train_and_evaluate(model, config, q1_train, q2_train, q1_test, q2_test, labe
 	else:
 		initial_epoch = 0
 	history = model.fit([q1_train, q2_train], labels_train, epochs = config['epochs'], initial_epoch = initial_epoch, verbose=1, batch_size=config['batch_size'], callbacks=[checkpoint], validation_split=0.1)
+	
 	#save whole model: architecture, weights and optimizer state
 	model.save(os.path.join(config['model_dir'], 'base_model.hdf5'))
 	
@@ -61,41 +61,43 @@ def train_and_evaluate(model, config, q1_train, q2_train, q1_test, q2_test, labe
 	plt.savefig(os.path.join(config['model_dir'], 'accuracy.png'))
 
 
+
 if __name__ == "__main__":
 	parser = argparse.ArgumentParser()
-	parser.add_argument('--model_dir', help='Directory with training parameters,', default='experiments/base_model')
-	parser.add_argument('--model', help='Python file specifying the model to train.', default = 'model/base_model.py')
+	parser.add_argument('--model', help='name of model to train.', default ='base_model')
+	parser.add_argument('--model_dir',help='directory with training parameters file / weights', default='experiments/base_model')
 	parser.add_argument('--train_subset', help='train using a smaller dataset?', dest='train_subset', action='store_true')
+	parser.add_argument('--clean', help='clean preprocess dataset', dest='clean', action='store_true')
 	parser.add_argument('--weights', help='.hdf5 file in model_dir to load weights from', default=None)
 	args = parser.parse_args()
 
-	assert os.path.exists(args.model_dir), "directory does not exist : {}".format(args.model_dir)
-	assert os.path.exists(args.model), "model file does not exist: {}".format(args.model)
-
-	#load the parameters 
+	# training parameters file
+	json_file = "training_parameters.json"
 	json_path = os.path.join(args.model_dir, json_file)
-	assert os.path.exists(json_path), "no model parameters found at {}".format(args.model_dir)
+	print (json_path)
+	assert os.path.exists(json_path)
 
 	#load the parameters from training data
 	assert os.path.exists(dataset_params_path)
 	config  = read_json(json_path, dataset_params_path)
 	config['model_dir'] = args.model_dir
-	config['model'] = get_basename(args.model)
+	config['model'] = args.model
 	config['train_subset'] = args.train_subset
-
+	config['clean'] = args.clean
 	config['weights'] = None
 	if args.weights is not None:
 		weights = os.path.join(args.model_dir, args.weights)
-		assert os.path.exists(weights), "file does not exist: ".format(weights)
+		assert os.path.exists(weights)
 		config['weights'] = weights
 
 	#import model module
 	module = importlib.import_module("model.%s" % config['model'])
 	
 	#load data
-	q1_train, q2_train, q1_test, q2_test, labels_train, labels_test, word_embeddings = load_dataset()
+	q1_train, q2_train, q1_test, q2_test, labels_train, labels_test, word_embeddings = load_dataset(config)
 	model = module.model(config, word_embeddings)
 	
+	print("starting training for {model}, epochs = {epochs}".format(model=config['model'], epochs=config['epochs']))
 	train_and_evaluate(model, config, q1_train, q2_train, q1_test, q2_test, labels_train, labels_test)
 
 

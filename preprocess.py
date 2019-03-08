@@ -61,7 +61,7 @@ def texts_to_sequences(q1_data, q2_data, labels, word_index):
 	y = np.array(y)
 	return q_1, q_2, y
 
-def process_dataset():
+def process_dataset(config):
 	q1_data = []
 	q2_data = []
 	labels = []
@@ -85,11 +85,11 @@ def process_dataset():
 	print ("converting text to integers")
 	q_1, q_2, labels = texts_to_sequences(q1_data, q2_data, labels, word_index)
 
-	max_seq = max([len(i) for i in q_1] + [len(i) for i in q_2])
-	print ("Maximum sequence in q_1: {}".format(max_seq))
+	# max_seq = max([len(i) for i in q_1] + [len(i) for i in q_2])
+	# print ("Maximum sequence in q_1: {}".format(max_seq))
 
-	q_1 = pad_sequences(q_1, maxlen = max_seq, padding="post")
-	q_2 = pad_sequences(q_2, maxlen = max_seq, padding="post")
+	q_1 = pad_sequences(q_1, maxlen = config['max_seq'], padding="post")
+	q_2 = pad_sequences(q_2, maxlen = config['max_seq'], padding="post")
 	assert q_2.shape == q_1.shape
 
 	#split into train and test sets
@@ -130,7 +130,7 @@ def process_dataset():
 		'test_size': len(q1_test),
 		'vocab_size': vocab_size,
 		'embed_dim' : embed_dim,
-		'seq_len' : max_seq
+		'seq_len' : config['max_seq']
 	};
 	save_json(dataset_info)
 	print("Finished preprocessing data and saved")
@@ -145,8 +145,8 @@ def data_processed():
 			return False
 	return True 
 
-def load_dataset():
-	if  data_processed():
+def load_dataset(config):
+	if  data_processed() and not config['clean']:
 		q1_train = np.load(open(q1_train_path, 'rb'))
 		q2_train = np.load(open(q2_train_path, 'rb'))
 		q1_test = np.load(open(q1_test_path, 'rb'))
@@ -161,18 +161,18 @@ def load_dataset():
 		'''
 		Be sure to download the dataset and glvoe embeddings before processing anything.
 		'''
-		if not os.path.exists(quora_dataset):
-			response = requests.get(quora_url, allow_redirects=True)
-			with open(quora_dataset, 'wb') as f:
-				for data in tqdm(response.iter_content()):
-					f.write(data)
+		# if not os.path.exists(quora_dataset):
+		# 	response = requests.get(quora_url, allow_redirects=True)
+		# 	with open(quora_dataset, 'wb') as f:
+		# 		for data in tqdm(response.iter_content()):
+		# 			f.write(data)
 
-		if not os.path.exists(glove_embeddings):
-			response = urlopen(glove_url)
-			zipfile = ZipFile(BytesIO(response.read()))
-			zipfile.extractall("data/glove")
+		# if not os.path.exists(glove_embeddings):
+		# 	response = urlopen(glove_url)
+		# 	zipfile = ZipFile(BytesIO(response.read()))
+		# 	zipfile.extractall("data/glove")
 
-		return process_dataset()
+		return process_dataset(config)
 
 if __name__ == '__main__':
 	load_dataset()

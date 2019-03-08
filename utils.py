@@ -13,10 +13,9 @@ def read_json(*pathnames):
 	return config
 
 def save_json(config, filename):
-	assert os.path.exists(filename), 'file {} does not exist'.format(filename)
 	with open(filename, 'w') as f:
-		item = {k: v for k, v in config.items()}
-		json.dump(k, v, indent=4)
+		d = {k: v for k, v in config.items()}
+		json.dump(d, f, indent=4)
 	#config is an object containing key: dict values
 def get_initial_epoch(checkpoint_path):
 	filename = get_basename(checkpoint_path)
