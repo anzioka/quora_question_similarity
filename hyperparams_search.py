@@ -13,6 +13,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument('--model', help='python file specifying the model to train.', default = 'base_model')
 parser.add_argument('--model_dir',help='directory with training parameters file / weights', default='experiments/base_model')
 parser.add_argument('--train_subset', help='train using a smaller dataset?', dest='train_subset', action='store_true')
+parser.add_argument('--save', help='save model after training / checkpoints', dest='save', action='store_true')
 
 
 
@@ -26,6 +27,8 @@ def launch_training_job(model_dir, model, params):
 	cmd = "{python} train.py --model_dir {model_dir} --model {model}".format(python=PYTHON, model_dir = model_dir, model = model)
 	if args.train_subset:
 		cmd = "{python} train.py --model_dir {model_dir} --train_subset --model {model}".format(python=PYTHON, model_dir = model_dir, model = model)
+	if args.save:
+		cmd = "{python} train.py --model_dir {model_dir} --save --train_subset --model {model}".format(python=PYTHON, model_dir = model_dir, model = model)
 	print (cmd)
 	check_call(cmd, shell=True)
 
@@ -42,7 +45,7 @@ def l2_regularization(model, logspace_params):
 	values = np.logspace(start, stop, num)
 	result = {}
 	for x in values:
-		params['lr'] = x
+		params['l2'] = x
 		model_dir = os.path.join(parent_dir, str(x))
 		os.makedirs(model_dir, exist_ok=True)
 		launch_training_job(model_dir, model, params)
