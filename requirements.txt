@@ -1,5 +1,5 @@
 pandas
-tensorflow>=1.5
+tensorflow-gpu==1.5
 matplotlib
 keras
 numpy

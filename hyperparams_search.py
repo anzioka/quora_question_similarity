@@ -23,7 +23,9 @@ def launch_training_job(model_dir, model, params):
 	utils.save_json(params, params_file)
 
 	#launch training job with config
-	cmd = "{python} train.py --model_dir {model_dir} --train_subset --model {model}".format(python=PYTHON, model_dir = model_dir, model = model)
+	cmd = "{python} train.py --model_dir {model_dir} --model {model}".format(python=PYTHON, model_dir = model_dir, model = model)
+	if args.train_subset:
+		cmd = "{python} train.py --model_dir {model_dir} --train_subset --model {model}".format(python=PYTHON, model_dir = model_dir, model = model)
 	print (cmd)
 	check_call(cmd, shell=True)
 
