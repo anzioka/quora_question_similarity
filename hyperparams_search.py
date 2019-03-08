@@ -31,10 +31,11 @@ def max_len(model):
 
 def hidden_size(model):
 	pass
-def l2_regularization(model, start, end, count):
+def l2_regularization(model, logspace_params):
+	start, stop, num = logspace_params
 	parent_dir = os.path.join(args.model_dir, "l2")
 	os.makedirs(parent_dir, exist_ok=True)
-	values = np.logspace(start,end,count)
+	values = np.logspace(start, stop, num)
 	result = {}
 	for x in values:
 		params['lr'] = x
@@ -50,13 +51,17 @@ def l2_regularization(model, start, end, count):
 
 	print("validation accuracy values with l2_regularization"):
 	print(result)
+	target = os.path.join(parent_dir, "val_acc.json")
+	utils.save_json(result, target)
+
 
 if __name__ == '__main__':
 	args = parser.parse_args()
 	params_file = os.path.join(args.model_dir, parameters)
 	assert os.path.exists(params_file)
 	params = utils.read_json(params_file)
-	l2_regularization('base_model', -4, -2, 10)
+	logspace_params = (-4, -2, 10)
+	l2_regularization('base_model', logspace_params)
 	# max_len('base_model')
 	# hidden_size('base_model')
 
