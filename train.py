@@ -22,7 +22,7 @@ def train_and_evaluate(model, config, q1_train, q2_train, q1_test, q2_test, labe
 		q2_train = q2_train[:1000]
 		labels_train = labels_train[:1000]
 
-	checkpoint = ModelCheckpoint(filepath=os.path.join(config['model_dir'], "{model}-{epoch:02d}-{val_loss:.2f}-{acc:.2f}.hdf5".format(model = config['model'])), save_best_only=True)
+	checkpoint = ModelCheckpoint(filepath=os.path.join(config['model_dir'], "{epoch:02d}-{val_loss:.2f}-{acc:.2f}.hdf5"), save_best_only=True)
 	# reduce_lr = ReduceLROnPlateau(verbose = 1, patience=10)
 
 	if config['weights'] is not None:

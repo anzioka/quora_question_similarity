@@ -12,6 +12,8 @@ PYTHON = sys.executable
 parser = argparse.ArgumentParser()
 parser.add_argument('--model', help='python file specifying the model to train.', default = 'base_model')
 parser.add_argument('--model_dir',help='directory with training parameters file / weights', default='experiments/base_model')
+parser.add_argument('--train_subset', help='train using a smaller dataset?', dest='train_subset', action='store_true')
+
 
 
 def launch_training_job(model_dir, model, params):
@@ -49,7 +51,7 @@ def l2_regularization(model, logspace_params):
 		max_val = max(d.items(), key = operator.itemgetter(1))
 		result[x] = max_val[1]
 
-	print("validation accuracy values with l2_regularization"):
+	print("validation accuracy values with l2_regularization")
 	print(result)
 	target = os.path.join(parent_dir, "val_acc.json")
 	utils.save_json(result, target)

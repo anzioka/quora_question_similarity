@@ -1,7 +1,7 @@
 {
-    "embed_dim": 300,
     "vocab_size": 86359,
-    "seq_len": 50,
+    "embed_dim": 300,
+    "train_size": 363861,
     "test_size": 40429,
-    "train_size": 363861
+    "seq_len": 50
 }
