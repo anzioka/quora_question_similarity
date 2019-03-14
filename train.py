@@ -18,9 +18,9 @@ dataset_params_path = "data/dataset_params.json"
 	
 def train_and_evaluate(model, config, q1_train, q2_train, q1_test, q2_test, labels_train, labels_test):
 	if config['train_subset']:
-		q1_train = q1_train[:1000]
-		q2_train = q2_train[:1000]
-		labels_train = labels_train[:1000]
+		q1_train = q1_train[:10000]
+		q2_train = q2_train[:10000]
+		labels_train = labels_train[:10000]
 
 	callbacks = []
 	if config['save']:
