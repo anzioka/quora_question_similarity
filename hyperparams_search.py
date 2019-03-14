@@ -61,6 +61,25 @@ def l2_regularization(model, logspace_params):
 	target = os.path.join(parent_dir, "val_acc.json")
 	utils.save_json(result, target)
 
+def setup_job(model, param_type, logspace_params):
+	start, stop, num = logspace_params
+	parent_dir = os.path.join(args.model_dir, param_type)
+	os.makedirs(parent_dir, exist_ok=True)
+	values = np.logspace(start, stop, num)
+
+	for x in values:
+		params[param_type] = x
+		model_dir = os.path.join(parent_dir, str(x))
+		os.makedirs(model_dir, exist_ok=True)
+		launch_training_job(model_dir, model, params)
+
+
+def dropout(model, logspace_params):
+	start, stop, num = logspace_params;
+	parent_dir = os.path.join(args.model_dir, "dropout")
+	os.makedirs(parent_dir, exist_ok=True)
+	values = np.logspace_params(start, stop, num)
+
 
 if __name__ == '__main__':
 	args = parser.parse_args()
@@ -68,9 +87,11 @@ if __name__ == '__main__':
 	assert os.path.exists(params_file)
 	params = utils.read_json(params_file)
 	logspace_params = (-4, -2, 10)
-	l2_regularization('base_model', logspace_params)
-	# max_len('base_model')
-	# hidden_size('base_model')
+	#setup_job('base_model', 'l2', logspace_params)
+
+	logspace_params = (-1, 0, 10)
+	setup_job('base_model', 'dropout', logspace_params)
+
 
 
 
