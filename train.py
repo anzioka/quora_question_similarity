@@ -18,9 +18,9 @@ dataset_params_path = "data/dataset_params.json"
 	
 def train_and_evaluate(model, config, q1_train, q2_train, q1_test, q2_test, labels_train, labels_test):
 	if config['train_subset']:
-		q1_train = q1_train[:10000]
-		q2_train = q2_train[:10000]
-		labels_train = labels_train[:10000]
+		q1_train = q1_train[:1000]
+		q2_train = q2_train[:1000]
+		labels_train = labels_train[:1000]
 
 	callbacks = []
 	if config['save']:
@@ -108,11 +108,17 @@ def train_and_evaluate(model, config, q1_train, q2_train, q1_test, q2_test, labe
 	dev_stats = {'acc' : max(acc), 'val_acc' : max(val_acc), 'precision': max(precision), 'val_precision': max(val_precision), 'f1_score' : max(f1_score), 'val_f1_score': max(val_f1_score)}
 	save_json(dev_stats, os.path.join(config['model_dir'], 'dev_stats.json'))
 
-	# evaluate if we trained on whole dataset
-	if not config['train_subset']:
-		print('Testing...')
-		loss, accuracy, precision, recall, f1_score = model.evaluate([q1_test, q2_test], labels_test)
-		print('loss: {0:.4f}, accuracy: {0:.4f} precision: {0:.4f}, recall: {0:.4f}, f1_score: {0:.4f}'.format(loss, accuracy, precision, recall, f1_score))
+	# evaluate on test dataset
+	if config['train_subset']:
+		labels_test = labels_test[:100]
+		q2_test = q2_test[:100]
+		q1_test = q1_test[:100]
+
+	print('Testing ...')
+	loss, accuracy, precision, recall, f1_score = model.evaluate([q1_test, q2_test], labels_test)
+	test_stats = {'acc' : accuracy, 'precision': precision, 'recall' : recall, 'f1_score': f1_score}
+	print('loss: {0:.4f}, accuracy: {0:.4f} precision: {0:.4f}, recall: {0:.4f}, f1_score: {0:.4f}'.format(loss, accuracy, precision, recall, f1_score))
+	save_json(test_stats, os.path.join(config['model_dir'], 'test_stats.json'))
 
 if __name__ == "__main__":
 	parser = argparse.ArgumentParser()

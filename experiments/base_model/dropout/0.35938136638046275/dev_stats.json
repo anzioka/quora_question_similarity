@@ -1,0 +1,8 @@
+{
+    "val_acc": 0.66,
+    "val_f1_score": 0.659999942779541,
+    "precision": 0.78,
+    "acc": 0.78,
+    "f1_score": 0.7799999403953553,
+    "val_precision": 0.66
+}

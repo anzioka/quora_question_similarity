@@ -1,0 +1,10 @@
+{
+	"optimizer" : "adam",
+	"loss" : "mean_squared_error",
+	"lr": 0.001,
+	"l2": 0.0,
+	"epochs" : 25,
+	"batch_size" : 64,
+	"hidden_dim" : 50,
+	"max_seq": 50
+}

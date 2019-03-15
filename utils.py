@@ -77,5 +77,8 @@ def recall(y_true, y_pred):
 	recall = c1 / (c3+K.epsilon())
 	return recall
 
+def exponent_neg_manhattan_distance(left, right):
+    return K.exp(-K.sum(K.abs(left-right), axis=1, keepdims=True))
+
 
 
