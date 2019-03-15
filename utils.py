@@ -22,8 +22,9 @@ def save_json(config, filename):
 		json.dump(d, f, indent=4)
 	#config is an object containing key: dict values
 def get_initial_epoch(checkpoint_path):
+	'04-0.42-0.83.hdf5'
 	filename = get_basename(checkpoint_path)
-	return int(filename.split("-")[1])
+	return int(filename.split("-")[0])
 
 def get_tokens_in_filename(filename):
 	return len(filename.split("/"));
