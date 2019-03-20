@@ -1,0 +1,11 @@
+{
+	"optimizer" : "adam",
+	"loss" : "binary_crossentropy",
+	"lr": 0.001,
+	"l2": 0.0,
+	"epochs" : 10,
+	"dropout" : 0.2,
+	"batch_size" : 64,
+	"hidden_dim" : 100,
+	"max_seq": 50
+}
