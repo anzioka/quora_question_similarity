@@ -161,17 +161,16 @@ def load_dataset(config):
 		'''
 		Be sure to download the dataset and glvoe embeddings before processing anything.
 		'''
-		# if not os.path.exists(quora_dataset):
-		# 	response = requests.get(quora_url, allow_redirects=True)
-		# 	with open(quora_dataset, 'wb') as f:
-		# 		for data in tqdm(response.iter_content()):
-		# 			f.write(data)
+		if not os.path.exists(quora_dataset):
+			response = requests.get(quora_url, allow_redirects=True)
+			with open(quora_dataset, 'wb') as f:
+				for data in tqdm(response.iter_content()):
+					f.write(data)
 
-		# if not os.path.exists(glove_embeddings):
-		# 	response = urlopen(glove_url)
-		# 	zipfile = ZipFile(BytesIO(response.read()))
-		# 	zipfile.extractall("data/glove")
-
+		if not os.path.exists(glove_embeddings):
+			response = urlopen(glove_url)
+			zipfile = ZipFile(BytesIO(response.read()))
+			zipfile.extractall("data/glove")
 		return process_dataset(config)
 
 if __name__ == '__main__':

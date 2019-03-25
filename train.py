@@ -21,7 +21,6 @@ def train_and_evaluate(model, config, q1_train, q2_train, q1_test, q2_test, labe
 		q1_train = q1_train[:1000]
 		q2_train = q2_train[:1000]
 		labels_train = labels_train[:1000]
-
 	callbacks = []
 	if config['save']:
 		checkpoint = ModelCheckpoint(filepath=os.path.join(config['model_dir'], "{epoch:02d}-{val_loss:.2f}-{acc:.2f}.hdf5"), save_best_only=True)

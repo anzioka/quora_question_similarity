@@ -16,7 +16,6 @@ parser.add_argument('--train_subset', help='train using a smaller dataset?', des
 parser.add_argument('--save', help='save model after training / checkpoints', dest='save', action='store_true')
 
 
-
 def launch_training_job(model_dir, model, params):
 	# model_dir contains training parameters
 	# need to copy over the params to the model_dir
@@ -33,11 +32,6 @@ def launch_training_job(model_dir, model, params):
 	check_call(cmd, shell=True)
 
 
-def max_len(model):
-	pass
-
-def hidden_size(model):
-	pass
 def l2_regularization(model, logspace_params):
 	start, stop, num = logspace_params
 	parent_dir = os.path.join(args.model_dir, "l2")
@@ -87,10 +81,20 @@ if __name__ == '__main__':
 	assert os.path.exists(params_file)
 	params = utils.read_json(params_file)
 	logspace_params = (-4, -2, 10)
-	#setup_job('base_model', 'l2', logspace_params)
+	# uncomment lines below to set up hyperparam search jobs
+	# setup_job('base_model', 'l2', logspace_params)
 
-	logspace_params = (-1, 0, 10)
-	setup_job('base_model', 'dropout', logspace_params)
+	# logspace_params = (-1, 0, 10)
+	# setup_job('base_model', 'dropout', logspace_params)
+
+	# logspace_params = (-4, -2, 10)
+	# setup_job('attention', 'l2', logspace_params)
+
+	# logspace_params = (-1, 0, 10)
+	# setup_job('bilstm', 'dropout', logspace_params)
+
+
+
 
 
 
